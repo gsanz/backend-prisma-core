@@ -11,4 +11,9 @@ export class UserRepositoryImpl implements UserRepository {
     this.users.push(user);
     return Promise.resolve(user);
   }
+
+  findAll(): Promise<User[]> {
+    //throw new Error('Method not implemented.');
+    return Promise.resolve(this.users);
+  }
 }
