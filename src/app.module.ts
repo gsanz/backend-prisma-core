@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './infraestructure/controllers/app.controller';
-import { AppService } from './domain/services/app.service';
+import { AppController } from './infraestructure/test/controllers/app.controller';
+import { AppService } from './domain/test/services/app.service';
 
 @Module({
   imports: [
