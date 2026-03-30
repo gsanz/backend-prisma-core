@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { USER_REPOSITORY } from '../../../domain/user/repositories/user.repository';
 import type { UserRepository } from '../../../domain/user/repositories/user.repository';
 
@@ -10,6 +10,12 @@ export class FindUserByIdUseCase {
   ) {}
 
   async execute(id: string) {
-    return this.userRepo.findById(id);
+    const user = await this.userRepo.findById(id);
+
+    if (!user) {
+      throw new NotFoundException('No hay ningún id asociado');
+    }
+
+    return user;
   }
 }
