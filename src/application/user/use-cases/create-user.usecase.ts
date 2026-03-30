@@ -14,7 +14,7 @@ export class CreateUserUseCase {
   ) {}
 
   async execute(dto: CreateUserDto) {
-    const user = User.create(uuid(), dto.name, dto.email);
+    const user = User.create(uuid(), dto.name, dto.email, dto.password);
     return this.userRepo.save(user);
   }
 }

@@ -3,14 +3,35 @@ export class User {
     public readonly id: string,
     private name: string,
     private email: string,
+    private password: string,
+    private createdAt: Date,
   ) {}
 
-  static create(id: string, name: string, email: string): User {
-    if (!email.includes('@')) {
+  static create(
+    id: string,
+    name: string,
+    email: string,
+    password: string,
+  ): User {
+    if (!this.isValidEmail(email)) {
       throw new Error('Invalid email');
     }
 
-    return new User(id, name, email);
+    if (password.length < 6) {
+      throw new Error('Password too short');
+    }
+
+    return new User(id, name, email, password, new Date());
+  }
+
+  // 🔒 validación privada
+  private static isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  // ✅ getters
+  getId(): string {
+    return this.id;
   }
 
   getName(): string {
@@ -19,5 +40,13 @@ export class User {
 
   getEmail(): string {
     return this.email;
+  }
+
+  getPassword(): string {
+    return this.password;
+  }
+
+  getCreatedAt(): Date {
+    return this.createdAt;
   }
 }

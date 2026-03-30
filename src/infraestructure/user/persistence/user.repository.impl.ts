@@ -1,19 +1,37 @@
-// infrastructure/user/persistence/user.repository.impl.ts
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../../domain/user/repositories/user.repository';
+import { PrismaService } from '../../prisma/prisma.service';
 import { User } from '../../../domain/user/entities/user.entity';
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository {
-  private users: User[] = [];
+  constructor(private readonly prisma: PrismaService) {}
 
-  save(user: User): Promise<User> {
-    this.users.push(user);
-    return Promise.resolve(user);
+  async save(user: User): Promise<User> {
+    const data = await this.prisma.user.create({
+      data: {
+        id: user.getId(),
+        name: user.getName(),
+        email: user.getEmail(),
+        password: user.getPassword(),
+        createdAt: user.getCreatedAt(),
+      },
+    });
+
+    return new User(
+      data.id,
+      data.name,
+      data.email,
+      data.password,
+      data.createdAt,
+    );
   }
 
-  findAll(): Promise<User[]> {
-    //throw new Error('Method not implemented.');
-    return Promise.resolve(this.users);
+  async findAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany();
+
+    return users.map(
+      (u) => new User(u.id, u.name, u.email, u.password, u.createdAt),
+    );
   }
 }
