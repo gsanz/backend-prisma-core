@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 import { CreateUserDto } from '../../../application/user/dto/create-user.dto';
 import { CreateUserUseCase } from '../../../application/user/use-cases/create-user.usecase';
 import { FindAllUsersUseCase } from '../../../application/user/use-cases/find-all-users.usecase';
+import { FindUserByIdUseCase } from '../../../application/user/use-cases/find-user-by-id.usecase';
 import { User } from '../../../domain/user/entities/user.entity';
 
 @ApiTags('users') // 👈 agrupa en Swagger
@@ -12,6 +13,7 @@ export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly findAllUsersUseCase: FindAllUsersUseCase,
+    private readonly findUserByIdUseCase: FindUserByIdUseCase,
   ) {}
 
   @Post()
@@ -39,5 +41,16 @@ export class UserController {
   })
   async findAll(): Promise<User[]> {
     return this.findAllUsersUseCase.execute();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de usuarios',
+    type: [User],
+  })
+  async findUserById(@Param('id') id: string): Promise<User | null> {
+    return this.findUserByIdUseCase.execute(id);
   }
 }

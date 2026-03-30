@@ -34,4 +34,20 @@ export class UserRepositoryImpl implements UserRepository {
       (u) => new User(u.id, u.name, u.email, u.password, u.createdAt),
     );
   }
+
+  async findById(id: string): Promise<User | null> {
+    const data = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!data) return null;
+
+    return new User(
+      data.id,
+      data.name,
+      data.email,
+      data.password,
+      data.createdAt,
+    );
+  }
 }

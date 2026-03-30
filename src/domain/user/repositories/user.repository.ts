@@ -3,4 +3,5 @@ export const USER_REPOSITORY = 'UserRepository';
 export interface UserRepository {
   save(user: User): Promise<User>;
   findAll(): Promise<User[]>;
+  findById(id: string): Promise<User | null>;
 }
