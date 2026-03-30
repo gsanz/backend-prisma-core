@@ -1,19 +1,24 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 import { CreateUserDto } from '../../../application/user/dto/create-user.dto';
+import { UpdateUserDto } from '../../../application/user/dto/update-user.dto';
+
 import { CreateUserUseCase } from '../../../application/user/use-cases/create-user.usecase';
 import { FindAllUsersUseCase } from '../../../application/user/use-cases/find-all-users.usecase';
 import { FindUserByIdUseCase } from '../../../application/user/use-cases/find-user-by-id.usecase';
+import { UpdateUserUseCase } from '../../../application/user/use-cases/update-user.usecase';
+
 import { User } from '../../../domain/user/entities/user.entity';
 
-@ApiTags('users') // 👈 agrupa en Swagger
+@ApiTags('users')
 @Controller('users')
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly findAllUsersUseCase: FindAllUsersUseCase,
     private readonly findUserByIdUseCase: FindUserByIdUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
   ) {}
 
   @Post()
@@ -44,13 +49,36 @@ export class UserController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({
     status: 200,
-    description: 'Lista de usuarios',
-    type: [User],
+    description: 'Usuario encontrado',
+    type: User,
   })
-  async findUserById(@Param('id') id: string): Promise<User | null> {
+  @ApiResponse({
+    status: 404,
+    description: 'No hay ningún id asociado',
+  })
+  async findUserById(@Param('id') id: string): Promise<User> {
     return this.findUserByIdUseCase.execute(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Actualizar parcialmente un usuario' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuario actualizado correctamente',
+    type: User,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No hay ningún id asociado',
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ): Promise<User> {
+    return this.updateUserUseCase.execute(id, dto);
   }
 }
