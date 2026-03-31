@@ -70,4 +70,20 @@ export class UserRepositoryImpl implements UserRepository {
       updated.createdAt,
     );
   }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.user.delete({
+      where: { id },
+    });
+  }
+
+  async deleteMany(ids: string[]): Promise<void> {
+    await this.prisma.user.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
 }

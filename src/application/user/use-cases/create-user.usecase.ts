@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { USER_REPOSITORY } from '../../../domain/user/repositories/user.repository';
-import type { UserRepository } from '../../../domain/user/repositories/user.repository'; // 👈 CLAVE
-
+import type { UserRepository } from '../../../domain/user/repositories/user.repository';
 import { User } from '../../../domain/user/entities/user.entity';
 import { v4 as uuid } from 'uuid';
 import { CreateUserDto } from '../dto/create-user.dto';

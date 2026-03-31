@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 import { CreateUserDto } from '../../../application/user/dto/create-user.dto';
@@ -8,6 +16,10 @@ import { CreateUserUseCase } from '../../../application/user/use-cases/create-us
 import { FindAllUsersUseCase } from '../../../application/user/use-cases/find-all-users.usecase';
 import { FindUserByIdUseCase } from '../../../application/user/use-cases/find-user-by-id.usecase';
 import { UpdateUserUseCase } from '../../../application/user/use-cases/update-user.usecase';
+import { DeleteUserUseCase } from '../../../application/user/use-cases/delete-user.usecase';
+
+import { DeleteMultipleUsersDto } from '../../../application/user/dto/delete-multiple-users.dto';
+import { DeleteMultipleUsersUseCase } from '../../../application/user/use-cases/delete-multiple-user.usecase';
 
 import { User } from '../../../domain/user/entities/user.entity';
 
@@ -19,6 +31,8 @@ export class UserController {
     private readonly findAllUsersUseCase: FindAllUsersUseCase,
     private readonly findUserByIdUseCase: FindUserByIdUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly deleteMultipleUsersUseCase: DeleteMultipleUsersUseCase, // 👈 añadido
   ) {}
 
   @Post()
@@ -80,5 +94,30 @@ export class UserController {
     @Body() dto: UpdateUserDto,
   ): Promise<User> {
     return this.updateUserUseCase.execute(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar un usuario' })
+  @ApiResponse({
+    status: 204,
+    description: 'Usuario eliminado correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No hay ningún id asociado',
+  })
+  async delete(@Param('id') id: string): Promise<void> {
+    return this.deleteUserUseCase.execute(id);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Eliminar múltiples usuarios' })
+  @ApiBody({ type: DeleteMultipleUsersDto })
+  @ApiResponse({
+    status: 204,
+    description: 'Usuarios eliminados correctamente',
+  })
+  async deleteMultiple(@Body() dto: DeleteMultipleUsersDto): Promise<void> {
+    return this.deleteMultipleUsersUseCase.execute(dto);
   }
 }
