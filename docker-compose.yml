@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: tragsa
+      POSTGRES_PASSWORD: tragsa
+      POSTGRES_DB: tragsa_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tragsa -d tragsa_db']
+      interval: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: nest-api
+    restart: always
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: >
+      sh -c "npx prisma migrate deploy && npx prisma generate && npm run build && node dist/src/main.js"
+
+volumes:
+  postgres_data:
