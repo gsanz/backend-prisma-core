@@ -10,9 +10,13 @@ import { LoginUseCase } from '../../application/auth/use-cases/login.usecase';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthController } from './controllers/AuthController';
+import { AUTH_REPOSITORY } from '../../domain/auth/repositories/auth.repository';
+import { AuthRepositoryImpl } from './persistence/auth.repository.impl';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     UserModule,
 
     PassportModule.register({
@@ -41,8 +45,38 @@ import { AuthController } from './controllers/AuthController';
 
   controllers: [AuthController],
 
-  providers: [LoginUseCase, JwtStrategy, JwtAuthGuard],
+  providers: [
+    LoginUseCase,
+    JwtStrategy,
+    JwtAuthGuard,
+    {
+      provide: AUTH_REPOSITORY,
+      useClass: AuthRepositoryImpl,
+    },
+  ],
 
-  exports: [LoginUseCase, JwtAuthGuard, PassportModule, JwtModule],
+  exports: [
+    LoginUseCase,
+    JwtAuthGuard,
+    PassportModule,
+    JwtModule,
+    AUTH_REPOSITORY,
+  ],
 })
 export class AuthModule {}
+/*
+  providers: [
+    CreateUserUseCase,
+    FindAllUsersUseCase,
+    FindUserByIdUseCase,
+    UpdateUserUseCase,
+    DeleteUserUseCase,
+    DeleteMultipleUsersUseCase, // 👈 añadido
+    {
+      provide: USER_REPOSITORY,
+      useClass: UserRepositoryImpl,
+    },
+  ]
+
+
+*/
