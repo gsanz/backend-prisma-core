@@ -1,5 +1,4 @@
 import {
-  Controller,
   ExecutionContext,
   Get,
   INestApplication,
@@ -26,6 +25,12 @@ describe('User Controller + JWT Token', () => {
   const mockUpdateUserUseCase = {
     execute: jest.fn() as unknown as jest.MockedFunction<
       UpdateUserUseCase['execute']
+    >,
+  };
+
+  const mockFindAllUsersUseCase = {
+    execute: jest.fn() as unknown as jest.MockedFunction<
+      FindAllUsersUseCase['execute']
     >,
   };
 
@@ -67,8 +72,7 @@ describe('User Controller + JWT Token', () => {
     await app.init();
   });
 
-  it('PATCH /users/:id -> debería devolver 200 y ejecutar el Caso de Uso si el token es válido', async () => {
-    // Simulamos que el caso de uso termina correctamente
+  it('PATH /users/:id -> debería devolver 200 y ejecutar el Caso de Uso si el token es válido', async () => {
     mockUpdateUserUseCase.execute.mockResolvedValue({
       email: 'tragsa@tragsa.es',
       name: 'Tragsa',
@@ -79,6 +83,18 @@ describe('User Controller + JWT Token', () => {
       .patch('/users/user-uuid-123')
       .set('Authorization', 'Bearer token-valido-de-prueba')
       .send({ name: 'Gorka Sanz' })
+      .expect(200);
+  });
+
+  it('GET /users -> debería devolver 200 con todos los usuarios y ejecutar el Caso de Uso si el token es válido', async () => {
+    mockFindAllUsersUseCase.execute.mockResolvedValue([
+      { id: '1', email: 'user1@tragsa.es', name: 'User One' },
+      { id: '2', email: 'user2@tragsa.es', name: 'User Two' },
+    ] as unknown as User[]);
+
+    return request(app.getHttpServer())
+      .get('/users')
+      .set('Authorization', 'Bearer token-valido-de-prueba')
       .expect(200);
   });
 });

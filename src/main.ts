@@ -18,8 +18,8 @@ async function bootstrap() {
 
   // 🔹 Swagger config
   const config = new DocumentBuilder()
-    .setTitle('Transagtec API')
-    .setDescription('API de alertas 112')
+    .setTitle('CORE API')
+    .setDescription('API CORE')
     .setVersion('1.0')
     .addTag('users')
     .build();

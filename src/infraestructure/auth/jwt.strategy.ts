@@ -17,6 +17,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // Si el token es válido matemáticamente, Passport descodifica el payload y llama a este método
   async validate(payload: any) {
     // El objeto que devuelvas aquí es el que se inyectará en la 'request.user'
+    console.log('VALOR PAYLOAD');
+    console.log(payload);
     if (!payload) {
       throw new UnauthorizedException();
     }
