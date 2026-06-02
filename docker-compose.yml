@@ -33,8 +33,11 @@ services:
       - .env
     volumes:
       - .:/app
+      - /app/node_modules # 💡 Evita que tu local pise las dependencias de Linux
+      - /app/dist # 💡 Evita que tu local pise el build rápido de Docker
+    # ⚡ Ejecuta todo automáticamente en el arranque, pero sin compilar en caliente
     command: >
-      sh -c "npx prisma migrate deploy && npx prisma db seed && npx prisma generate && npm run build && node dist/src/main.js"
+      sh -c "npx prisma migrate deploy && npx prisma db seed && node dist/src/main.js"
 
 volumes:
   postgres_data:
