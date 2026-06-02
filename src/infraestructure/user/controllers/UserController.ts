@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
@@ -22,6 +23,7 @@ import { DeleteMultipleUsersDto } from '../../../application/user/dto/delete-mul
 import { DeleteMultipleUsersUseCase } from '../../../application/user/use-cases/delete-multiple-user.usecase';
 
 import { User } from '../../../domain/user/entities/user.entity';
+import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -52,6 +54,7 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({
     status: 200,
@@ -78,6 +81,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Actualizar parcialmente un usuario' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({

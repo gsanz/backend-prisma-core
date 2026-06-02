@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './infraestructure/test/controllers/app.controller';
 import { AppService } from './domain/test/services/app.service';
 import { UserModule } from './infraestructure/user/user.module';
+import { AuthModule } from './infraestructure/auth/auth.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { UserModule } from './infraestructure/user/user.module';
       isGlobal: true, // hace que esté disponible en toda la app
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
