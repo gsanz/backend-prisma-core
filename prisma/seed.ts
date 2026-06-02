@@ -21,6 +21,11 @@ async function main() {
       email: 'ana@tragsa.com',
       password: '123456',
     },
+    {
+      name: 'Pedro',
+      email: 'plopez@tragsa.com',
+      password: '123456',
+    },
   ];
 
   for (const user of users) {
