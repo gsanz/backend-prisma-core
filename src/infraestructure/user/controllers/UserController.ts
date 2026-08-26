@@ -8,7 +8,13 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 import { CreateUserDto } from '../../../application/user/dto/create-user.dto';
 import { UpdateUserDto } from '../../../application/user/dto/update-user.dto';
@@ -26,6 +32,7 @@ import { User } from '../../../domain/user/entities/user.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UserController {
   constructor(

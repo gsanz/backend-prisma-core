@@ -1,0 +1,134 @@
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+
+import { CreateCameraDto } from '../../../application/camera/dto/create-camera.dto';
+import { UpdateCameraDto } from '../../../application/camera/dto/update-camera.dto';
+import { DeleteMultipleCamerasDto } from '../../../application/camera/dto/delete-multiple-cameras.dto';
+
+import { CreateCameraUseCase } from '../../../application/camera/use-cases/create-camera.usecase';
+import { FindAllCamerasUseCase } from '../../../application/camera/use-cases/find-all-cameras.usecase';
+import { FindCameraByIdUseCase } from '../../../application/camera/use-cases/find-camera-by-id.usecase';
+import { UpdateCameraUseCase } from '../../../application/camera/use-cases/update-camera.usecase';
+import { DeleteCameraUseCase } from '../../../application/camera/use-cases/delete-camera.usecase';
+import { DeleteMultipleCamerasUseCase } from '../../../application/camera/use-cases/delete-multiple-camera.usecase';
+
+import { Camera } from '../../../domain/camera/entities/camera.entity';
+import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+
+@ApiTags('cameras')
+@ApiBearerAuth()
+@Controller('cameras')
+export class CameraController {
+  constructor(
+    private readonly createCameraUseCase: CreateCameraUseCase,
+    private readonly findAllCamerasUseCase: FindAllCamerasUseCase,
+    private readonly findCameraByIdUseCase: FindCameraByIdUseCase,
+    private readonly updateCameraUseCase: UpdateCameraUseCase,
+    private readonly deleteCameraUseCase: DeleteCameraUseCase,
+    private readonly deleteMultipleCamerasUseCase: DeleteMultipleCamerasUseCase,
+  ) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Crear una cámara' })
+  @ApiBody({ type: CreateCameraDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Cámara creada correctamente',
+    type: Camera,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos',
+  })
+  async create(@Body() dto: CreateCameraDto): Promise<Camera> {
+    return this.createCameraUseCase.execute(dto);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Obtener todas las cámaras' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de cámaras',
+    type: [Camera],
+  })
+  async findAll(): Promise<Camera[]> {
+    return this.findAllCamerasUseCase.execute();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Obtener cámara por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cámara encontrada',
+    type: Camera,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No hay ninguna cámara asociada al ID',
+  })
+  async findCameraById(@Param('id', ParseIntPipe) id: string): Promise<Camera> {
+    return this.findCameraByIdUseCase.execute(id);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Actualizar parcialmente una cámara' })
+  @ApiBody({ type: UpdateCameraDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Cámara actualizada correctamente',
+    type: Camera,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No hay ninguna cámara asociada al ID',
+  })
+  async update(
+    @Param('id', ParseIntPipe) id: string,
+    @Body() dto: UpdateCameraDto,
+  ): Promise<Camera> {
+    return this.updateCameraUseCase.execute(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar una cámara' })
+  @ApiResponse({
+    status: 204,
+    description: 'Cámara eliminada correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No hay ninguna cámara asociada al ID',
+  })
+  async delete(@Param('id', ParseIntPipe) id: string): Promise<void> {
+    return this.deleteCameraUseCase.execute(id);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Eliminar múltiples cámaras' })
+  @ApiBody({ type: DeleteMultipleCamerasDto })
+  @ApiResponse({
+    status: 204,
+    description: 'Cámaras eliminadas correctamente',
+  })
+  async deleteMultiple(@Body() dto: DeleteMultipleCamerasDto): Promise<void> {
+    return this.deleteMultipleCamerasUseCase.execute(dto);
+  }
+}
