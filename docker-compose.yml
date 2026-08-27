@@ -1,43 +1,17 @@
-version: '3.8'
-
 services:
-  postgresql:
-    image: postgres:15
-    container_name: postgres-db
-    restart: always
-    environment:
-      POSTGRES_USER: tragsa
-      POSTGRES_PASSWORD: tragsa
-      POSTGRES_DB: tragsa_db
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U tragsa -d tragsa_db']
-      interval: 5s
-      retries: 5
-
   api:
     build:
       context: .
       dockerfile: Dockerfile.dev
     container_name: nest-api
     restart: always
-    depends_on:
-      postgresql:
-        condition: service_healthy
     ports:
       - '3000:3000'
     env_file:
       - .env
     volumes:
       - .:/app
-      - /app/node_modules # 💡 Evita que tu local pise las dependencias de Linux
-      - /app/dist # 💡 Evita que tu local pise el build rápido de Docker
-    # ⚡ Ejecuta todo automáticamente en el arranque, pero sin compilar en caliente
+      - /app/node_modules
+      # /app/dist ELIMINADO
     command: >
-      sh -c "npx prisma migrate deploy && npx prisma db seed && node dist/src/main.js"
-
-volumes:
-  postgres_data:
+      sh -c "npx prisma db push && npx prisma db seed && npm run start:dev"

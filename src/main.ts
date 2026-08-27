@@ -16,6 +16,12 @@ async function bootstrap() {
     }),
   );
 
+    app.enableCors({
+    origin: true, // O true para permitir cualquier origen en desarrollo
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
   // 🔹 Swagger config
   const config = new DocumentBuilder()
     .setTitle('CORE API')
