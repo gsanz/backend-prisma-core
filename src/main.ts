@@ -16,8 +16,9 @@ async function bootstrap() {
     }),
   );
 
-    app.enableCors({
-    origin: true, // O true para permitir cualquier origen en desarrollo
+  // 🔹 CORS: Recomendado permitir el origen del frontend en producción
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
@@ -29,14 +30,15 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('users')
     .addBearerAuth()
+    .addServer('/') // 👈 Rutas relativas: funciona automáticamente en localhost y Render
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  console.log('DATABASE_URL:', process.env.DATABASE_URL);
-
-  //await app.listen(process.env.PORT ?? 3000);
-  await app.listen(3000, '0.0.0.0');
+  // 🔹 Puerto dinámico para Render
+  const port = process.env.PORT || 3000; // 👈 CRÍTICO: usa la variable PORT asignada por Render
+  await app.listen(port, '0.0.0.0');
+  console.log(`Servidor escuchando en el puerto ${port}`);
 }
 bootstrap();
