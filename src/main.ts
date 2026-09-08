@@ -30,6 +30,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('users')
     .addTag('tasks')
+    .addTag('roles')
     .addBearerAuth()
     .addServer('/') // 👈 Rutas relativas: funciona automáticamente en localhost y Render
     .build();

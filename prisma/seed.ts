@@ -6006,6 +6006,27 @@ export const camarasData: CamaraGVA[] = [
 ];*/
 
 async function main() {
+  console.log('🌱 Procesando roles...');
+
+  const roles = [
+    { nombre: 'Administrador' },
+    { nombre: 'Manager' },
+    { nombre: 'Técnico' },
+  ];
+
+  const roleMap: Record<string, string> = {};
+
+  for (const role of roles) {
+    const created = await prisma.role.upsert({
+      where: { nombre: role.nombre },
+      update: {},
+      create: { nombre: role.nombre },
+    });
+    roleMap[role.nombre] = created.id;
+  }
+
+  console.log('✅ Roles procesados correctamente.');
+
   console.log('🌱 Procesando usuarios...');
 
   const users = [
@@ -6013,19 +6034,21 @@ async function main() {
       name: 'Juan',
       email: 'juan@tragsa.com',
       password: '123456',
+      roleName: 'Administrador',
     },
     {
       name: 'Ana',
       email: 'ana@tragsa.com',
       password: '123456',
+      roleName: 'Manager',
     },
     {
       name: 'Pedro',
       email: 'plopez@tragsa.com',
       password: '123456',
+      roleName: 'Técnico',
     },
   ];
-  
 
   for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -6035,11 +6058,13 @@ async function main() {
       update: {
         name: user.name,
         password: hashedPassword,
+        roleId: roleMap[user.roleName],
       },
       create: {
         name: user.name,
         email: user.email,
         password: hashedPassword,
+        roleId: roleMap[user.roleName],
       },
     });
   }

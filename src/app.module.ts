@@ -6,6 +6,7 @@ import { UserModule } from './infraestructure/user/user.module';
 import { AuthModule } from './infraestructure/auth/auth.module';
 import { CameraModule } from './infraestructure/camera/camera.module';
 import { TaskModule } from './infraestructure/task/task.module';
+import { RoleModule } from './infraestructure/role/role.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TaskModule } from './infraestructure/task/task.module';
     AuthModule,
     CameraModule,
     TaskModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
