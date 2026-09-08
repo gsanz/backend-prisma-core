@@ -3,6 +3,7 @@ import { TaskRepository } from '../../../domain/task/repositories/task.repositor
 import { PrismaService } from '../../prisma/prisma.service';
 import { Task } from '../../../domain/task/entities/task.entity';
 import { UpdateTaskData } from 'src/domain/task/types/update-task-data.type';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @Injectable()
 export class TaskRepositoryImpl implements TaskRepository {
@@ -30,10 +31,19 @@ export class TaskRepositoryImpl implements TaskRepository {
     );
   }
 
-  async findAll(): Promise<Task[]> {
-    const tasks = await this.prisma.tareaUsuario.findMany();
+  async findAll(page: number, limit: number): Promise<PaginatedResult<Task>> {
+    const skip = (page - 1) * limit;
 
-    return tasks.map(
+    const [tasks, total] = await Promise.all([
+      this.prisma.tareaUsuario.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.tareaUsuario.count(),
+    ]);
+
+    const data = tasks.map(
       (t) => new Task(
         t.id,
         t.nombre,
@@ -43,6 +53,8 @@ export class TaskRepositoryImpl implements TaskRepository {
         t.createdAt,
       ),
     );
+
+    return new PaginatedResult(data, total, page, limit);
   }
 
   async findById(id: string): Promise<Task | null> {

@@ -3,6 +3,7 @@ import { CameraRepository } from '../../../domain/camera/repositories/camera.rep
 import { PrismaService } from '../../prisma/prisma.service';
 import { Camera } from '../../../domain/camera/entities/camera.entity';
 import { UpdateCameraData } from 'src/domain/camera/types/update-camera-data.type';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @Injectable()
 export class CameraRepositoryImpl implements CameraRepository {
@@ -32,10 +33,19 @@ export class CameraRepositoryImpl implements CameraRepository {
     );
   }
 
-  async findAll(): Promise<Camera[]> {
-    const cameras = await this.prisma.camaraGva.findMany();
+  async findAll(page: number, limit: number): Promise<PaginatedResult<Camera>> {
+    const skip = (page - 1) * limit;
 
-    return cameras.map(
+    const [cameras, total] = await Promise.all([
+      this.prisma.camaraGva.findMany({
+        skip,
+        take: limit,
+        orderBy: { fechaRegistro: 'desc' },
+      }),
+      this.prisma.camaraGva.count(),
+    ]);
+
+    const data = cameras.map(
       (c) =>
         new Camera(
           c.id,
@@ -47,6 +57,8 @@ export class CameraRepositoryImpl implements CameraRepository {
           c.fechaRegistro,
         ),
     );
+
+    return new PaginatedResult(data, total, page, limit);
   }
 
   async findById(id: string): Promise<Camera | null> {

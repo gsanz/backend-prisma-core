@@ -9,7 +9,7 @@ export class FindAllCamerasUseCase {
     private readonly cameraRepo: CameraRepository,
   ) {}
 
-  async execute() {
-    return this.cameraRepo.findAll();
+  async execute(page: number, limit: number) {
+    return this.cameraRepo.findAll(page, limit);
   }
 }

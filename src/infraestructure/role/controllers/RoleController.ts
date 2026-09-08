@@ -7,6 +7,7 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,10 +15,12 @@ import {
   ApiResponse,
   ApiBody,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 import { CreateRoleDto } from '../../../application/role/dto/create-role.dto';
 import { UpdateRoleDto } from '../../../application/role/dto/update-role.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 import { CreateRoleUseCase } from '../../../application/role/use-cases/create-role.usecase';
 import { FindAllRolesUseCase } from '../../../application/role/use-cases/find-all-roles.usecase';
@@ -30,6 +33,7 @@ import { DeleteMultipleRolesUseCase } from '../../../application/role/use-cases/
 
 import { Role } from '../../../domain/role/entities/role.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('roles')
 @ApiBearerAuth()
@@ -62,14 +66,15 @@ export class RoleController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Obtener todos los roles' })
+  @ApiOperation({ summary: 'Obtener todos los roles (paginado)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
   @ApiResponse({
     status: 200,
-    description: 'Lista de roles',
-    type: [Role],
+    description: 'Lista paginada de roles',
   })
-  async findAll(): Promise<Role[]> {
-    return this.findAllRolesUseCase.execute();
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginatedResult<Role>> {
+    return this.findAllRolesUseCase.execute(pagination.page ?? 1, pagination.limit ?? 10);
   }
 
   @Get(':id')

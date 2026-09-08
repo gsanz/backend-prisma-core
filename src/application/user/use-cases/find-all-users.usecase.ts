@@ -9,7 +9,7 @@ export class FindAllUsersUseCase {
     private readonly userRepo: UserRepository,
   ) {}
 
-  async execute() {
-    return this.userRepo.findAll();
+  async execute(page: number, limit: number) {
+    return this.userRepo.findAll(page, limit);
   }
 }

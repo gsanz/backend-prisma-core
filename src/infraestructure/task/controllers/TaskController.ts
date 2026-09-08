@@ -7,6 +7,7 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,10 +15,12 @@ import {
   ApiResponse,
   ApiBody,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 import { CreateTaskDto } from '../../../application/task/dto/create-task.dto';
 import { UpdateTaskDto } from '../../../application/task/dto/update-task.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 import { CreateTaskUseCase } from '../../../application/task/use-cases/create-task.usecase';
 import { FindAllTasksUseCase } from '../../../application/task/use-cases/find-all-tasks.usecase';
@@ -30,6 +33,7 @@ import { DeleteMultipleTasksUseCase } from '../../../application/task/use-cases/
 
 import { Task } from '../../../domain/task/entities/task.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('tasks')
 @ApiBearerAuth()
@@ -62,14 +66,15 @@ export class TaskController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Obtener todas las tareas' })
+  @ApiOperation({ summary: 'Obtener todas las tareas (paginado)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
   @ApiResponse({
     status: 200,
-    description: 'Lista de tareas',
-    type: [Task],
+    description: 'Lista paginada de tareas',
   })
-  async findAll(): Promise<Task[]> {
-    return this.findAllTasksUseCase.execute();
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginatedResult<Task>> {
+    return this.findAllTasksUseCase.execute(pagination.page ?? 1, pagination.limit ?? 10);
   }
 
   @Get(':id')

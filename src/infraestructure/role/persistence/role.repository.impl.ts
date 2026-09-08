@@ -3,6 +3,7 @@ import { RoleRepository } from '../../../domain/role/repositories/role.repositor
 import { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '../../../domain/role/entities/role.entity';
 import { UpdateRoleData } from 'src/domain/role/types/update-role-data.type';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @Injectable()
 export class RoleRepositoryImpl implements RoleRepository {
@@ -20,12 +21,23 @@ export class RoleRepositoryImpl implements RoleRepository {
     return new Role(data.id, data.nombre, data.createdAt);
   }
 
-  async findAll(): Promise<Role[]> {
-    const roles = await this.prisma.role.findMany();
+  async findAll(page: number, limit: number): Promise<PaginatedResult<Role>> {
+    const skip = (page - 1) * limit;
 
-    return roles.map(
+    const [roles, total] = await Promise.all([
+      this.prisma.role.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.role.count(),
+    ]);
+
+    const data = roles.map(
       (r) => new Role(r.id, r.nombre, r.createdAt),
     );
+
+    return new PaginatedResult(data, total, page, limit);
   }
 
   async findById(id: string): Promise<Role | null> {

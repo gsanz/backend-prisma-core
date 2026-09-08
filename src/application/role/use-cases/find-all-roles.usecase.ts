@@ -9,7 +9,7 @@ export class FindAllRolesUseCase {
     private readonly roleRepo: RoleRepository,
   ) {}
 
-  async execute() {
-    return this.roleRepo.findAll();
+  async execute(page: number, limit: number) {
+    return this.roleRepo.findAll(page, limit);
   }
 }

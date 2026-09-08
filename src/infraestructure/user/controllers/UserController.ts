@@ -7,6 +7,7 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,10 +15,12 @@ import {
   ApiResponse,
   ApiBody,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 import { CreateUserDto } from '../../../application/user/dto/create-user.dto';
 import { UpdateUserDto } from '../../../application/user/dto/update-user.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 import { CreateUserUseCase } from '../../../application/user/use-cases/create-user.usecase';
 import { FindAllUsersUseCase } from '../../../application/user/use-cases/find-all-users.usecase';
@@ -30,6 +33,7 @@ import { DeleteMultipleUsersUseCase } from '../../../application/user/use-cases/
 
 import { User } from '../../../domain/user/entities/user.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -41,7 +45,7 @@ export class UserController {
     private readonly findUserByIdUseCase: FindUserByIdUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
-    private readonly deleteMultipleUsersUseCase: DeleteMultipleUsersUseCase, // 👈 añadido
+    private readonly deleteMultipleUsersUseCase: DeleteMultipleUsersUseCase,
   ) {}
 
   @Post()
@@ -62,14 +66,15 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiOperation({ summary: 'Obtener todos los usuarios (paginado)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
   @ApiResponse({
     status: 200,
-    description: 'Lista de usuarios',
-    type: [User],
+    description: 'Lista paginada de usuarios',
   })
-  async findAll(): Promise<User[]> {
-    return this.findAllUsersUseCase.execute();
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginatedResult<User>> {
+    return this.findAllUsersUseCase.execute(pagination.page ?? 1, pagination.limit ?? 10);
   }
 
   @Get(':id')

@@ -9,7 +9,7 @@ export class FindAllTasksUseCase {
     private readonly taskRepo: TaskRepository,
   ) {}
 
-  async execute() {
-    return this.taskRepo.findAll();
+  async execute(page: number, limit: number) {
+    return this.taskRepo.findAll(page, limit);
   }
 }

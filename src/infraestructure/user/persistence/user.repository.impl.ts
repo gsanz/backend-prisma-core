@@ -3,6 +3,7 @@ import { UserRepository } from '../../../domain/user/repositories/user.repositor
 import { PrismaService } from '../../prisma/prisma.service';
 import { User } from '../../../domain/user/entities/user.entity';
 import { UpdateUserData } from 'src/domain/user/types/update-user-data.type';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository {
@@ -28,12 +29,23 @@ export class UserRepositoryImpl implements UserRepository {
     );
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await this.prisma.user.findMany();
+  async findAll(page: number, limit: number): Promise<PaginatedResult<User>> {
+    const skip = (page - 1) * limit;
 
-    return users.map(
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count(),
+    ]);
+
+    const data = users.map(
       (u) => new User(u.id, u.name, u.email, u.password, u.createdAt),
     );
+
+    return new PaginatedResult(data, total, page, limit);
   }
 
   async findById(id: string): Promise<User | null> {

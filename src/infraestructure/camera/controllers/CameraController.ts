@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,11 +16,13 @@ import {
   ApiResponse,
   ApiBody,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 import { CreateCameraDto } from '../../../application/camera/dto/create-camera.dto';
 import { UpdateCameraDto } from '../../../application/camera/dto/update-camera.dto';
 import { DeleteMultipleCamerasDto } from '../../../application/camera/dto/delete-multiple-cameras.dto';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 import { CreateCameraUseCase } from '../../../application/camera/use-cases/create-camera.usecase';
 import { FindAllCamerasUseCase } from '../../../application/camera/use-cases/find-all-cameras.usecase';
@@ -30,6 +33,7 @@ import { DeleteMultipleCamerasUseCase } from '../../../application/camera/use-ca
 
 import { Camera } from '../../../domain/camera/entities/camera.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('cameras')
 @ApiBearerAuth()
@@ -62,14 +66,15 @@ export class CameraController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Obtener todas las cámaras' })
+  @ApiOperation({ summary: 'Obtener todas las cámaras (paginado)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
   @ApiResponse({
     status: 200,
-    description: 'Lista de cámaras',
-    type: [Camera],
+    description: 'Lista paginada de cámaras',
   })
-  async findAll(): Promise<Camera[]> {
-    return this.findAllCamerasUseCase.execute();
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginatedResult<Camera>> {
+    return this.findAllCamerasUseCase.execute(pagination.page ?? 1, pagination.limit ?? 10);
   }
 
   @Get(':id')
