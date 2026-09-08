@@ -33,11 +33,15 @@ import { DeleteMultipleTasksUseCase } from '../../../application/task/use-cases/
 
 import { Task } from '../../../domain/task/entities/task.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/infraestructure/auth/roles.guard';
+import { Roles } from 'src/infraestructure/auth/roles.decorator';
+import { RoleName } from 'src/domain/role/enums/role.enum';
 import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('tasks')
 @ApiBearerAuth()
 @Controller('tasks')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class TaskController {
   constructor(
     private readonly createTaskUseCase: CreateTaskUseCase,
@@ -49,6 +53,7 @@ export class TaskController {
   ) {}
 
   @Post()
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Crear una tarea' })
   @ApiBody({ type: CreateTaskDto })
   @ApiResponse({
@@ -65,7 +70,7 @@ export class TaskController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener todas las tareas (paginado)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
@@ -78,6 +83,7 @@ export class TaskController {
   }
 
   @Get(':id')
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener tarea por ID' })
   @ApiResponse({
     status: 200,
@@ -93,7 +99,7 @@ export class TaskController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Actualizar parcialmente una tarea' })
   @ApiBody({ type: UpdateTaskDto })
   @ApiResponse({
@@ -113,6 +119,7 @@ export class TaskController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Eliminar una tarea' })
   @ApiResponse({
     status: 204,
@@ -127,6 +134,7 @@ export class TaskController {
   }
 
   @Delete()
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Eliminar múltiples tareas' })
   @ApiBody({ type: DeleteMultipleTasksDto })
   @ApiResponse({

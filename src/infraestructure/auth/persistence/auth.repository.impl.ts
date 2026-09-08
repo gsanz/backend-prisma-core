@@ -12,10 +12,11 @@ export class AuthRepositoryImpl implements AuthRepository {
   async findByAuthEmail(email: string): Promise<AuthUser | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
+      include: { role: true },
     });
 
     if (!user) return null;
 
-    return new AuthUser(user.id, user.email, user.password);
+    return new AuthUser(user.id, user.email, user.password, user.role?.nombre ?? '');
   }
 }

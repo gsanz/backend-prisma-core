@@ -33,11 +33,15 @@ import { DeleteMultipleRolesUseCase } from '../../../application/role/use-cases/
 
 import { Role } from '../../../domain/role/entities/role.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/infraestructure/auth/roles.guard';
+import { Roles } from 'src/infraestructure/auth/roles.decorator';
+import { RoleName } from 'src/domain/role/enums/role.enum';
 import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('roles')
 @ApiBearerAuth()
 @Controller('roles')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class RoleController {
   constructor(
     private readonly createRoleUseCase: CreateRoleUseCase,
@@ -49,6 +53,7 @@ export class RoleController {
   ) {}
 
   @Post()
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Crear un rol' })
   @ApiBody({ type: CreateRoleDto })
   @ApiResponse({
@@ -65,7 +70,7 @@ export class RoleController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Obtener todos los roles (paginado)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
@@ -78,6 +83,7 @@ export class RoleController {
   }
 
   @Get(':id')
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Obtener rol por ID' })
   @ApiResponse({
     status: 200,
@@ -93,7 +99,7 @@ export class RoleController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Actualizar parcialmente un rol' })
   @ApiBody({ type: UpdateRoleDto })
   @ApiResponse({
@@ -113,6 +119,7 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Eliminar un rol' })
   @ApiResponse({
     status: 204,
@@ -127,6 +134,7 @@ export class RoleController {
   }
 
   @Delete()
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Eliminar múltiples roles' })
   @ApiBody({ type: DeleteMultipleRolesDto })
   @ApiResponse({

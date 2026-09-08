@@ -16,6 +16,7 @@ import { DeleteMultipleUsersUseCase } from '../../../application/user/use-cases/
 import { Test } from '@nestjs/testing';
 import { User } from '../../../domain/user/entities/user.entity';
 import { JwtAuthGuard } from '../../../infraestructure/auth/jwt-auth.guard';
+import { RolesGuard } from '../../../infraestructure/auth/roles.guard';
 import { CreateUserUseCase } from '../../../application/user/use-cases/create-user.usecase';
 import { FindAllUsersUseCase } from '../../../application/user/use-cases/find-all-users.usecase';
 
@@ -47,7 +48,8 @@ describe('User Controller + JWT Token', () => {
           provide: DeleteMultipleUsersUseCase,
           useValue: { execute: jest.fn() },
         },
-        JwtAuthGuard, // Necesitamos registrar el Guard en el entorno de pruebas
+        JwtAuthGuard,
+        RolesGuard,
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -56,16 +58,16 @@ describe('User Controller + JWT Token', () => {
           const req = context.switchToHttp().getRequest();
           const authHeader = req.headers['authorization'];
 
-          // Si no hay token o no empieza por Bearer, simulamos la expulsión (401)
           if (!authHeader || !authHeader.startsWith('Bearer ')) {
             throw new UnauthorizedException('Token no válido o ausente');
           }
 
-          // Si lleva el token, inyectamos un usuario ficticio en la request y dejamos pasar (true)
-          req.user = { id: 'user-uuid-123', email: 'tragsa@tragsa.es' };
+          req.user = { id: 'user-uuid-123', email: 'tragsa@tragsa.es', role: 'Administrador' };
           return true;
         },
       })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -87,10 +89,16 @@ describe('User Controller + JWT Token', () => {
   });
 
   it('GET /users -> debería devolver 200 con todos los usuarios y ejecutar el Caso de Uso si el token es válido', async () => {
-    mockFindAllUsersUseCase.execute.mockResolvedValue([
-      { id: '1', email: 'user1@tragsa.es', name: 'User One' },
-      { id: '2', email: 'user2@tragsa.es', name: 'User Two' },
-    ] as unknown as User[]);
+    mockFindAllUsersUseCase.execute.mockResolvedValue({
+      data: [
+        { id: '1', email: 'user1@tragsa.es', name: 'User One' },
+        { id: '2', email: 'user2@tragsa.es', name: 'User Two' },
+      ],
+      total: 2,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    } as any);
 
     return request(app.getHttpServer())
       .get('/users')

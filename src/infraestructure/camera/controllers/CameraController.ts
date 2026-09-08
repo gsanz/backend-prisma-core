@@ -33,11 +33,15 @@ import { DeleteMultipleCamerasUseCase } from '../../../application/camera/use-ca
 
 import { Camera } from '../../../domain/camera/entities/camera.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/infraestructure/auth/roles.guard';
+import { Roles } from 'src/infraestructure/auth/roles.decorator';
+import { RoleName } from 'src/domain/role/enums/role.enum';
 import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('cameras')
 @ApiBearerAuth()
 @Controller('cameras')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CameraController {
   constructor(
     private readonly createCameraUseCase: CreateCameraUseCase,
@@ -49,6 +53,7 @@ export class CameraController {
   ) {}
 
   @Post()
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Crear una cámara' })
   @ApiBody({ type: CreateCameraDto })
   @ApiResponse({
@@ -65,7 +70,7 @@ export class CameraController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Obtener todas las cámaras (paginado)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
@@ -78,6 +83,7 @@ export class CameraController {
   }
 
   @Get(':id')
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Obtener cámara por ID' })
   @ApiResponse({
     status: 200,
@@ -93,7 +99,7 @@ export class CameraController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Actualizar parcialmente una cámara' })
   @ApiBody({ type: UpdateCameraDto })
   @ApiResponse({
@@ -113,6 +119,7 @@ export class CameraController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Eliminar una cámara' })
   @ApiResponse({
     status: 204,
@@ -127,6 +134,7 @@ export class CameraController {
   }
 
   @Delete()
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Eliminar múltiples cámaras' })
   @ApiBody({ type: DeleteMultipleCamerasDto })
   @ApiResponse({

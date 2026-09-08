@@ -33,11 +33,15 @@ import { DeleteMultipleUsersUseCase } from '../../../application/user/use-cases/
 
 import { User } from '../../../domain/user/entities/user.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/infraestructure/auth/roles.guard';
+import { Roles } from 'src/infraestructure/auth/roles.decorator';
+import { RoleName } from 'src/domain/role/enums/role.enum';
 import { PaginatedResult } from '../../../common/types/paginated-result.type';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
@@ -49,6 +53,7 @@ export class UserController {
   ) {}
 
   @Post()
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Crear un usuario' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
@@ -65,7 +70,7 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Obtener todos los usuarios (paginado)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
@@ -78,6 +83,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({
     status: 200,
@@ -93,7 +99,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
   @ApiOperation({ summary: 'Actualizar parcialmente un usuario' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
@@ -113,6 +119,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiResponse({
     status: 204,
@@ -127,6 +134,7 @@ export class UserController {
   }
 
   @Delete()
+  @Roles(RoleName.ADMINISTRADOR)
   @ApiOperation({ summary: 'Eliminar múltiples usuarios' })
   @ApiBody({ type: DeleteMultipleUsersDto })
   @ApiResponse({
