@@ -13,6 +13,8 @@ model User {
   password  String   @db.VarChar(255)
   createdAt DateTime @default(now()) @map("created_at")
 
+  tareas TareaUsuario[]
+
   @@map("users")
 }
 
@@ -26,4 +28,17 @@ model CamaraGva {
   fechaRegistro DateTime @default(now()) @map("fecha_registro") @db.Timestamptz
 
   @@map("camaras_gva")
+}
+
+model TareaUsuario {
+  id              String   @id @default(uuid()) @db.Uuid
+  nombre          String   @db.VarChar(255)
+  fechaInicio     DateTime @map("fecha_inicio") @db.Date
+  horasEstimadas  Decimal  @map("horas_estimadas") @db.Decimal(5, 2)
+  userId          String   @map("user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("tareas_usuario")
 }

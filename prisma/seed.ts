@@ -6046,6 +6046,48 @@ async function main() {
 
   console.log('✅ Usuarios procesados correctamente.');
 
+  console.log('🌱 Procesando tareas por usuario...');
+
+  const tareas = [
+    {
+      nombre: 'Revisión de cámaras DGT',
+      fechaInicio: new Date('2026-09-01'),
+      horasEstimadas: 20.5,
+      userEmail: 'juan@tragsa.com',
+    },
+    {
+      nombre: 'Mantenimiento base de datos',
+      fechaInicio: new Date('2026-09-05'),
+      horasEstimadas: 15.0,
+      userEmail: 'ana@tragsa.com',
+    },
+    {
+      nombre: 'Actualización de endpoints API',
+      fechaInicio: new Date('2026-09-10'),
+      horasEstimadas: 25.0,
+      userEmail: 'plopez@tragsa.com',
+    },
+  ];
+
+  for (const tarea of tareas) {
+    const user = await prisma.user.findUnique({
+      where: { email: tarea.userEmail },
+    });
+
+    if (user) {
+      await prisma.tareaUsuario.create({
+        data: {
+          nombre: tarea.nombre,
+          fechaInicio: tarea.fechaInicio,
+          horasEstimadas: tarea.horasEstimadas,
+          userId: user.id,
+        },
+      });
+    }
+  }
+
+  console.log('✅ Tareas procesadas correctamente.');
+
   console.log('🌱 Procesando cámaras GVA...');
 
   // Inserción en lote omitiendo duplicados (ajusta 'camara' si el modelo en tu schema.prisma tiene otro nombre)
