@@ -29,6 +29,7 @@ async function bootstrap() {
     .setDescription('API CORE')
     .setVersion('1.0')
     .addTag('users')
+    .addTag('tasks')
     .addBearerAuth()
     .addServer('/') // 👈 Rutas relativas: funciona automáticamente en localhost y Render
     .build();

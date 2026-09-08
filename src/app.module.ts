@@ -5,6 +5,7 @@ import { AppService } from './domain/test/services/app.service';
 import { UserModule } from './infraestructure/user/user.module';
 import { AuthModule } from './infraestructure/auth/auth.module';
 import { CameraModule } from './infraestructure/camera/camera.module';
+import { TaskModule } from './infraestructure/task/task.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CameraModule } from './infraestructure/camera/camera.module';
     UserModule,
     AuthModule,
     CameraModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],
