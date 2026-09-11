@@ -100,12 +100,22 @@ export class UserRepositoryImpl implements UserRepository {
   }
 
   async delete(id: string): Promise<void> {
+    await this.prisma.tareaUsuario.deleteMany({
+      where: { userId: id },
+    });
     await this.prisma.user.delete({
       where: { id },
     });
   }
 
   async deleteMany(ids: string[]): Promise<void> {
+    await this.prisma.tareaUsuario.deleteMany({
+      where: {
+        userId: {
+          in: ids,
+        },
+      },
+    });
     await this.prisma.user.deleteMany({
       where: {
         id: {
