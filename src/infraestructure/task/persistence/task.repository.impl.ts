@@ -31,27 +31,34 @@ export class TaskRepositoryImpl implements TaskRepository {
     );
   }
 
-  async findAll(page: number, limit: number): Promise<PaginatedResult<Task>> {
+  async findAll(
+    page: number,
+    limit: number,
+    userId?: string,
+  ): Promise<PaginatedResult<Task>> {
     const skip = (page - 1) * limit;
+    const where = userId ? { userId } : undefined;
 
     const [tasks, total] = await Promise.all([
       this.prisma.tareaUsuario.findMany({
+        where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.tareaUsuario.count(),
+      this.prisma.tareaUsuario.count({ where }),
     ]);
 
     const data = tasks.map(
-      (t) => new Task(
-        t.id,
-        t.nombre,
-        t.fechaInicio,
-        Number(t.horasEstimadas),
-        t.userId,
-        t.createdAt,
-      ),
+      (t) =>
+        new Task(
+          t.id,
+          t.nombre,
+          t.fechaInicio,
+          Number(t.horasEstimadas),
+          t.userId,
+          t.createdAt,
+        ),
     );
 
     return new PaginatedResult(data, total, page, limit);
@@ -80,14 +87,15 @@ export class TaskRepositoryImpl implements TaskRepository {
     });
 
     return tasks.map(
-      (t) => new Task(
-        t.id,
-        t.nombre,
-        t.fechaInicio,
-        Number(t.horasEstimadas),
-        t.userId,
-        t.createdAt,
-      ),
+      (t) =>
+        new Task(
+          t.id,
+          t.nombre,
+          t.fechaInicio,
+          Number(t.horasEstimadas),
+          t.userId,
+          t.createdAt,
+        ),
     );
   }
 

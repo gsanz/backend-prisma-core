@@ -26,6 +26,7 @@ model User {
 
   role    Role?          @relation(fields: [roleId], references: [id])
   tareas  TareaUsuario[]
+  taskLogs TaskLog[]
 
   @@map("users")
 }
@@ -50,7 +51,27 @@ model TareaUsuario {
   userId          String   @map("user_id") @db.Uuid
   createdAt       DateTime @default(now()) @map("created_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user    User      @relation(fields: [userId], references: [id])
+  taskLogs TaskLog[]
 
   @@map("tareas_usuario")
+}
+
+model TaskLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  tareaId     String   @map("tarea_id") @db.Uuid
+  tareaNombre String   @map("tarea_nombre") @db.VarChar(255)
+  fecha       DateTime @map("fecha") @db.Date
+  descripcion String?  @db.Text
+  horas       Decimal? @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user  User         @relation(fields: [userId], references: [id])
+  tarea TareaUsuario @relation(fields: [tareaId], references: [id])
+
+  @@map("task_log")
+  @@index([userId, fecha])
+  @@index([tareaId])
 }

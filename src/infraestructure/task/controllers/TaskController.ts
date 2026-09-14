@@ -72,14 +72,37 @@ export class TaskController {
   @Get()
   @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener todas las tareas (paginado)' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Número de página',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Elementos por página',
+  })
+  @ApiQuery({
+    name: 'userId',
+    required: false,
+    type: String,
+    description: 'Filtrar por usuario',
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista paginada de tareas',
   })
-  async findAll(@Query() pagination: PaginationDto): Promise<PaginatedResult<Task>> {
-    return this.findAllTasksUseCase.execute(pagination.page ?? 1, pagination.limit ?? 10);
+  async findAll(
+    @Query() pagination: PaginationDto,
+    @Query('userId') userId?: string,
+  ): Promise<PaginatedResult<Task>> {
+    return this.findAllTasksUseCase.execute(
+      pagination.page ?? 1,
+      pagination.limit ?? 10,
+      userId,
+    );
   }
 
   @Get(':id')

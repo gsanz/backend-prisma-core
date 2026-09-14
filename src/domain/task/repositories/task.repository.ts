@@ -6,7 +6,11 @@ export const TASK_REPOSITORY = 'TaskRepository';
 
 export interface TaskRepository {
   save(task: Task): Promise<Task>;
-  findAll(page: number, limit: number): Promise<PaginatedResult<Task>>;
+  findAll(
+    page: number,
+    limit: number,
+    userId?: string,
+  ): Promise<PaginatedResult<Task>>;
   findById(id: string): Promise<Task | null>;
   findByUserId(userId: string): Promise<Task[]>;
   update(id: string, data: UpdateTaskData): Promise<Task>;
