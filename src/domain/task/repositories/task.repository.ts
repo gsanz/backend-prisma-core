@@ -10,6 +10,7 @@ export interface TaskRepository {
     page: number,
     limit: number,
     userId?: string,
+    fecha?: Date,
   ): Promise<PaginatedResult<Task>>;
   findById(id: string): Promise<Task | null>;
   findByUserId(userId: string): Promise<Task[]>;

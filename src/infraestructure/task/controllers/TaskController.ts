@@ -19,8 +19,8 @@ import {
 } from '@nestjs/swagger';
 
 import { CreateTaskDto } from '../../../application/task/dto/create-task.dto';
+import { FindAllTasksDto } from '../../../application/task/dto/find-all-tasks.dto';
 import { UpdateTaskDto } from '../../../application/task/dto/update-task.dto';
-import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 import { CreateTaskUseCase } from '../../../application/task/use-cases/create-task.usecase';
 import { FindAllTasksUseCase } from '../../../application/task/use-cases/find-all-tasks.usecase';
@@ -90,18 +90,22 @@ export class TaskController {
     type: String,
     description: 'Filtrar por usuario',
   })
+  @ApiQuery({
+    name: 'fecha',
+    required: false,
+    type: String,
+    description: 'Día seleccionado; devuelve las tareas del día siguiente',
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista paginada de tareas',
   })
-  async findAll(
-    @Query() pagination: PaginationDto,
-    @Query('userId') userId?: string,
-  ): Promise<PaginatedResult<Task>> {
+  async findAll(@Query() pagination: FindAllTasksDto): Promise<PaginatedResult<Task>> {
     return this.findAllTasksUseCase.execute(
       pagination.page ?? 1,
       pagination.limit ?? 10,
-      userId,
+      pagination.userId,
+      pagination.fecha ? new Date(pagination.fecha) : undefined,
     );
   }
 

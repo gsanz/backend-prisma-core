@@ -35,9 +35,25 @@ export class TaskRepositoryImpl implements TaskRepository {
     page: number,
     limit: number,
     userId?: string,
+    fecha?: Date,
   ): Promise<PaginatedResult<Task>> {
     const skip = (page - 1) * limit;
-    const where = userId ? { userId } : undefined;
+    const selectedDay = fecha
+      ? new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1)
+      : undefined;
+    const followingDay = selectedDay
+      ? new Date(
+          selectedDay.getFullYear(),
+          selectedDay.getMonth(),
+          selectedDay.getDate() + 1,
+        )
+      : undefined;
+    const where = {
+      ...(userId && { userId }),
+      ...(selectedDay && followingDay && {
+        fechaInicio: { gte: selectedDay, lt: followingDay },
+      }),
+    };
 
     const [tasks, total] = await Promise.all([
       this.prisma.tareaUsuario.findMany({
