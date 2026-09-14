@@ -17,7 +17,7 @@ export class CreateUserUseCase {
     if (existingUser) {
       throw new BadRequestException('Ya existe un usuario con ese email');
     }
-    const user = User.create(uuid(), dto.name, dto.email, dto.password);
+    const user = User.create(uuid(), dto.name, dto.email, dto.password, dto.roleId);
     return this.userRepo.save(user);
   }
 }

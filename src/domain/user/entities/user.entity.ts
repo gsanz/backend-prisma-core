@@ -5,6 +5,7 @@ export class User {
     private email: string,
     private password: string,
     private createdAt: Date,
+    private roleId: string | null,
   ) {}
 
   static create(
@@ -12,6 +13,7 @@ export class User {
     name: string,
     email: string,
     password: string,
+    roleId?: string,
   ): User {
     if (!this.isValidEmail(email)) {
       throw new Error('Invalid email');
@@ -21,7 +23,7 @@ export class User {
       throw new Error('Password too short');
     }
 
-    return new User(id, name, email, password, new Date());
+    return new User(id, name, email, password, new Date(), roleId ?? null);
   }
 
   // 🔒 validación privada
@@ -48,5 +50,9 @@ export class User {
 
   getCreatedAt(): Date {
     return this.createdAt;
+  }
+
+  getRoleId(): string | null {
+    return this.roleId;
   }
 }

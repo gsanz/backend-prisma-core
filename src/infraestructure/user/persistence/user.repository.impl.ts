@@ -16,6 +16,7 @@ export class UserRepositoryImpl implements UserRepository {
         name: user.getName(),
         email: user.getEmail(),
         password: user.getPassword(),
+        roleId: user.getRoleId(),
         createdAt: user.getCreatedAt(),
       },
     });
@@ -26,6 +27,7 @@ export class UserRepositoryImpl implements UserRepository {
       data.email,
       data.password,
       data.createdAt,
+      data.roleId,
     );
   }
 
@@ -42,7 +44,7 @@ export class UserRepositoryImpl implements UserRepository {
     ]);
 
     const data = users.map(
-      (u) => new User(u.id, u.name, u.email, u.password, u.createdAt),
+      (u) => new User(u.id, u.name, u.email, u.password, u.createdAt, u.roleId),
     );
 
     return new PaginatedResult(data, total, page, limit);
@@ -61,6 +63,7 @@ export class UserRepositoryImpl implements UserRepository {
       data.email,
       data.password,
       data.createdAt,
+      data.roleId,
     );
   }
 
@@ -77,6 +80,7 @@ export class UserRepositoryImpl implements UserRepository {
       data.email,
       data.password,
       data.createdAt,
+      data.roleId,
     );
   }
 
@@ -87,6 +91,7 @@ export class UserRepositoryImpl implements UserRepository {
         ...(data.name && { name: data.name }),
         ...(data.email && { email: data.email }),
         ...(data.password && { password: data.password }),
+        ...(data.roleId && { roleId: data.roleId }),
       },
     });
 
@@ -96,6 +101,7 @@ export class UserRepositoryImpl implements UserRepository {
       updated.email,
       updated.password,
       updated.createdAt,
+      updated.roleId,
     );
   }
 
