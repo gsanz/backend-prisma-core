@@ -7,9 +7,21 @@ export interface TaskLogRepository {
   findById(id: string): Promise<TaskLog | null>;
   findByUserIdAndDate(userId: string, fecha: Date): Promise<TaskLog[]>;
   findByUserIdAndDateRange(userId: string, fechaInicio: Date, fechaFin: Date): Promise<TaskLog[]>;
+  findForExport(fechaInicio: Date, fechaFin: Date, userId?: string): Promise<TaskLogExportRow[]>;
   update(id: string, data: UpdateTaskLogData): Promise<TaskLog>;
   delete(id: string): Promise<void>;
 }
+
+export type TaskLogExportRow = {
+  fecha: Date;
+  tareaNombre: string;
+  descripcion: string | null;
+  horas: number | null;
+  user: {
+    name: string;
+    email: string;
+  };
+};
 
 export type UpdateTaskLogData = {
   descripcion?: string | null;

@@ -1,20 +1,23 @@
 import {
-  Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Query, Req,
+  Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Query, Req, Res,
 } from '@nestjs/common';
 import {
-  ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth, ApiQuery,
+  ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth, ApiQuery, ApiProduces,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import type { Response } from 'express';
 
 import { CreateTaskLogDto } from '../../../application/task/dto/create-task-log.dto';
 import { UpdateTaskLogDto } from '../../../application/task/dto/update-task-log.dto';
 import { FindTaskLogsByDateDto, FindTaskLogsByDateRangeDto } from '../../../application/task/dto/find-task-logs.dto';
+import { ExportTaskLogsDto } from '../../../application/task/dto/export-task-logs.dto';
 
 import { CreateTaskLogUseCase } from '../../../application/task/use-cases/create-task-log.usecase';
 import { FindTaskLogsByUserAndDateUseCase } from '../../../application/task/use-cases/find-task-logs-by-user-date.usecase';
 import { FindTaskLogsByUserAndDateRangeUseCase } from '../../../application/task/use-cases/find-task-logs-by-user-date-range.usecase';
 import { UpdateTaskLogUseCase } from '../../../application/task/use-cases/update-task-log.usecase';
 import { DeleteTaskLogUseCase } from '../../../application/task/use-cases/delete-task-log.usecase';
+import { ExportTaskLogsToExcelUseCase } from '../../../application/task/use-cases/export-task-logs-to-excel.usecase';
 
 import { TaskLog } from '../../../domain/task/entities/task-log.entity';
 import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
@@ -37,6 +40,7 @@ export class TaskLogController {
     private readonly findTaskLogsByUserAndDateRangeUseCase: FindTaskLogsByUserAndDateRangeUseCase,
     private readonly updateTaskLogUseCase: UpdateTaskLogUseCase,
     private readonly deleteTaskLogUseCase: DeleteTaskLogUseCase,
+    private readonly exportTaskLogsToExcelUseCase: ExportTaskLogsToExcelUseCase,
   ) {}
 
   @Get('day')
@@ -64,6 +68,37 @@ export class TaskLogController {
     return this.findTaskLogsByUserAndDateRangeUseCase.execute(
       request.user.id, fechaInicio, fechaFin,
     );
+  }
+
+  @Get('export')
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
+  @ApiOperation({ summary: 'Exportar registros de tareas a Excel' })
+  @ApiProduces('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @ApiQuery({ name: 'fechaInicio', required: true, type: String, description: 'Fecha inicial en formato YYYY-MM-DD' })
+  @ApiQuery({ name: 'fechaFin', required: true, type: String, description: 'Fecha final en formato YYYY-MM-DD' })
+  @ApiQuery({ name: 'userId', required: false, type: String, description: 'ID del usuario; si se omite, incluye todos' })
+  @ApiResponse({ status: 200, description: 'Fichero Excel generado' })
+  async export(
+    @Query() dto: ExportTaskLogsDto,
+    @Res() response: Response,
+  ): Promise<void> {
+    const fechaInicio = this.parseDateOnly(dto.fechaInicio);
+    const fechaFin = this.parseDateOnly(dto.fechaFin);
+    const file = await this.exportTaskLogsToExcelUseCase.execute(fechaInicio, fechaFin, dto.userId);
+
+    response
+      .status(200)
+      .set({
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="task-logs_${dto.fechaInicio.slice(0, 10)}_${dto.fechaFin.slice(0, 10)}.xlsx"`,
+        'Content-Length': file.length.toString(),
+      })
+      .send(file);
+  }
+
+  private parseDateOnly(value: string): Date {
+    const [year, month, day] = value.slice(0, 10).split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 
   @Post()

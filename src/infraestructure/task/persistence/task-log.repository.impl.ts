@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { TaskLogRepository, UpdateTaskLogData } from '../../../domain/task/repositories/task-log.repository';
+import {
+  TaskLogRepository,
+  TaskLogExportRow,
+  UpdateTaskLogData,
+} from '../../../domain/task/repositories/task-log.repository';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TaskLog } from '../../../domain/task/entities/task-log.entity';
 
@@ -108,6 +112,35 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
         l.updatedAt,
       ),
     );
+  }
+
+  async findForExport(
+    fechaInicio: Date,
+    fechaFin: Date,
+    userId?: string,
+  ): Promise<TaskLogExportRow[]> {
+    const startOfDay = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), fechaInicio.getDate());
+    const endOfDay = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), fechaFin.getDate() + 1);
+
+    const logs = await this.prisma.taskLog.findMany({
+      where: {
+        ...(userId && { userId }),
+        fecha: { gte: startOfDay, lt: endOfDay },
+      },
+      orderBy: [{ fecha: 'asc' }, { createdAt: 'asc' }],
+      select: {
+        fecha: true,
+        tareaNombre: true,
+        descripcion: true,
+        horas: true,
+        user: { select: { name: true, email: true } },
+      },
+    });
+
+    return logs.map((log) => ({
+      ...log,
+      horas: log.horas != null ? Number(log.horas) : null,
+    }));
   }
 
   async update(id: string, data: UpdateTaskLogData): Promise<TaskLog> {

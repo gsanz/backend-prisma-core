@@ -14,6 +14,7 @@ import { FindTaskLogsByUserAndDateUseCase } from '../../application/task/use-cas
 import { FindTaskLogsByUserAndDateRangeUseCase } from '../../application/task/use-cases/find-task-logs-by-user-date-range.usecase';
 import { UpdateTaskLogUseCase } from '../../application/task/use-cases/update-task-log.usecase';
 import { DeleteTaskLogUseCase } from '../../application/task/use-cases/delete-task-log.usecase';
+import { ExportTaskLogsToExcelUseCase } from '../../application/task/use-cases/export-task-logs-to-excel.usecase';
 
 import { TaskRepositoryImpl } from './persistence/task.repository.impl';
 import { TaskLogRepositoryImpl } from './persistence/task-log.repository.impl';
@@ -37,6 +38,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     FindTaskLogsByUserAndDateRangeUseCase,
     UpdateTaskLogUseCase,
     DeleteTaskLogUseCase,
+    ExportTaskLogsToExcelUseCase,
     {
       provide: TASK_REPOSITORY,
       useClass: TaskRepositoryImpl,
@@ -58,6 +60,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     FindTaskLogsByUserAndDateRangeUseCase,
     UpdateTaskLogUseCase,
     DeleteTaskLogUseCase,
+    ExportTaskLogsToExcelUseCase,
     TASK_REPOSITORY,
     TASK_LOG_REPOSITORY,
   ],
