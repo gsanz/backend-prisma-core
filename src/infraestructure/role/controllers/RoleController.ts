@@ -70,7 +70,7 @@ export class RoleController {
   }
 
   @Get()
-  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener todos los roles (paginado)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
@@ -83,7 +83,7 @@ export class RoleController {
   }
 
   @Get(':id')
-  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener rol por ID' })
   @ApiResponse({
     status: 200,
