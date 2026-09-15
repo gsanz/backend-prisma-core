@@ -70,7 +70,7 @@ export class UserController {
   }
 
   @Get()
-  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener todos los usuarios (paginado)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Elementos por página' })
@@ -83,7 +83,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER)
+  @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({
     status: 200,
