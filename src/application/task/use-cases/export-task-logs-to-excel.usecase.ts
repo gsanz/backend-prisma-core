@@ -22,6 +22,7 @@ export class ExportTaskLogsToExcelUseCase {
     worksheet.columns = [
       { header: 'Fecha', key: 'fecha', width: 14 },
       { header: 'Usuario', key: 'usuario', width: 24 },
+      { header: 'Apellido', key: 'apellido', width: 24 },
       { header: 'Email', key: 'email', width: 32 },
       { header: 'Tarea', key: 'tarea', width: 36 },
       { header: 'Descripción', key: 'descripcion', width: 60 },
@@ -40,6 +41,7 @@ export class ExportTaskLogsToExcelUseCase {
       worksheet.addRow({
         fecha: row.fecha.toISOString().slice(0, 10),
         usuario: row.user.name,
+        apellido: row.user.secondname ?? '',
         email: row.user.email,
         tarea: row.tareaNombre,
         descripcion: row.descripcion ?? '',

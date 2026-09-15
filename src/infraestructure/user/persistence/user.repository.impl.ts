@@ -14,6 +14,7 @@ export class UserRepositoryImpl implements UserRepository {
       data: {
         id: user.getId(),
         name: user.getName(),
+        secondname: user.getSecondname(),
         email: user.getEmail(),
         password: user.getPassword(),
         roleId: user.getRoleId(),
@@ -24,6 +25,7 @@ export class UserRepositoryImpl implements UserRepository {
     return new User(
       data.id,
       data.name,
+      data.secondname,
       data.email,
       data.password,
       data.createdAt,
@@ -44,7 +46,7 @@ export class UserRepositoryImpl implements UserRepository {
     ]);
 
     const data = users.map(
-      (u) => new User(u.id, u.name, u.email, u.password, u.createdAt, u.roleId),
+      (u) => new User(u.id, u.name, u.secondname, u.email, u.password, u.createdAt, u.roleId),
     );
 
     return new PaginatedResult(data, total, page, limit);
@@ -60,6 +62,7 @@ export class UserRepositoryImpl implements UserRepository {
     return new User(
       data.id,
       data.name,
+      data.secondname,
       data.email,
       data.password,
       data.createdAt,
@@ -77,6 +80,7 @@ export class UserRepositoryImpl implements UserRepository {
     return new User(
       data.id,
       data.name,
+      data.secondname,
       data.email,
       data.password,
       data.createdAt,
@@ -89,6 +93,7 @@ export class UserRepositoryImpl implements UserRepository {
       where: { id },
       data: {
         ...(data.name && { name: data.name }),
+        ...(data.secondname !== undefined && { secondname: data.secondname }),
         ...(data.email && { email: data.email }),
         ...(data.password && { password: data.password }),
         ...(data.roleId && { roleId: data.roleId }),
@@ -98,6 +103,7 @@ export class UserRepositoryImpl implements UserRepository {
     return new User(
       updated.id,
       updated.name,
+      updated.secondname,
       updated.email,
       updated.password,
       updated.createdAt,

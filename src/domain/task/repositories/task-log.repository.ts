@@ -19,6 +19,7 @@ export type TaskLogExportRow = {
   horas: number | null;
   user: {
     name: string;
+    secondname: string | null;
     email: string;
   };
 };

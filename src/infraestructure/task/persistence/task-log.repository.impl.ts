@@ -133,7 +133,7 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
         tareaNombre: true,
         descripcion: true,
         horas: true,
-        user: { select: { name: true, email: true } },
+        user: { select: { name: true, secondname: true, email: true } },
       },
     });
 

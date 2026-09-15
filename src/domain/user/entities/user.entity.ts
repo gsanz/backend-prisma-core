@@ -2,6 +2,7 @@ export class User {
   constructor(
     public readonly id: string,
     private name: string,
+    private secondname: string | null,
     private email: string,
     private password: string,
     private createdAt: Date,
@@ -11,6 +12,7 @@ export class User {
   static create(
     id: string,
     name: string,
+    secondname: string | null,
     email: string,
     password: string,
     roleId?: string,
@@ -23,7 +25,7 @@ export class User {
       throw new Error('Password too short');
     }
 
-    return new User(id, name, email, password, new Date(), roleId ?? null);
+    return new User(id, name, secondname, email, password, new Date(), roleId ?? null);
   }
 
   // 🔒 validación privada
@@ -38,6 +40,10 @@ export class User {
 
   getName(): string {
     return this.name;
+  }
+
+  getSecondname(): string | null {
+    return this.secondname;
   }
 
   getEmail(): string {

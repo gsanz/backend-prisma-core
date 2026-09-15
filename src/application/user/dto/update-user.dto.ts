@@ -16,6 +16,12 @@ export class UpdateUserDto {
   @MaxLength(100)
   name?: string;
 
+  @ApiPropertyOptional({ example: 'Pérez', description: 'Apellido del usuario' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  secondname?: string;
+
   @ApiPropertyOptional({ example: 'juan@email.com' })
   @IsOptional()
   @IsEmail()

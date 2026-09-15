@@ -11,7 +11,7 @@ describe('ExportTaskLogsToExcelUseCase', () => {
         tareaNombre: 'Revisión de cámaras',
         descripcion: 'Comprobación diaria',
         horas: 2.5,
-        user: { name: 'Pedro', email: 'plopez@tragsa.com' },
+        user: { name: 'Pedro', secondname: 'López', email: 'plopez@tragsa.com' },
       },
     ];
     const findForExport = jest.fn<TaskLogRepository['findForExport']>().mockResolvedValue(rows);
@@ -38,6 +38,7 @@ describe('ExportTaskLogsToExcelUseCase', () => {
       undefined,
       'Fecha',
       'Usuario',
+      'Apellido',
       'Email',
       'Tarea',
       'Descripción',
@@ -47,6 +48,7 @@ describe('ExportTaskLogsToExcelUseCase', () => {
       undefined,
       '2026-09-15',
       'Pedro',
+      'López',
       'plopez@tragsa.com',
       'Revisión de cámaras',
       'Comprobación diaria',

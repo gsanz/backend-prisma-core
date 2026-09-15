@@ -9,6 +9,12 @@ export class CreateUserDto {
   @MaxLength(100)
   name!: string;
 
+  @ApiPropertyOptional({ example: 'Pérez', description: 'Apellido del usuario' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  secondname?: string;
+
   @ApiProperty({ example: 'juan@email.com' })
   @IsEmail()
   email!: string;

@@ -46,18 +46,21 @@ async function main() {
   const users = [
     {
       name: 'Juan',
+      secondname: 'García',
       email: 'juan@tragsa.com',
       password: '123456',
       roleName: 'Administrador',
     },
     {
       name: 'Ana',
+      secondname: 'Martínez',
       email: 'ana@tragsa.com',
       password: '123456',
       roleName: 'Manager',
     },
     {
       name: 'Pedro',
+      secondname: 'López',
       email: 'plopez@tragsa.com',
       password: '123456',
       roleName: 'Técnico',
@@ -71,11 +74,13 @@ async function main() {
       where: { email: user.email },
       update: {
         name: user.name,
+        secondname: user.secondname,
         password: hashedPassword,
         roleId: roleMap[user.roleName],
       },
       create: {
         name: user.name,
+        secondname: user.secondname,
         email: user.email,
         password: hashedPassword,
         roleId: roleMap[user.roleName],

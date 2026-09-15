@@ -20,7 +20,7 @@ export class CreateUserUseCase {
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = User.create(uuid(), dto.name, dto.email, hashedPassword, dto.roleId);
+    const user = User.create(uuid(), dto.name, dto.secondname ?? null, dto.email, hashedPassword, dto.roleId);
     return this.userRepo.save(user);
   }
 }
