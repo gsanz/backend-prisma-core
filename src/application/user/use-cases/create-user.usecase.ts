@@ -4,6 +4,7 @@ import type { UserRepository } from '../../../domain/user/repositories/user.repo
 import { User } from '../../../domain/user/entities/user.entity';
 import { v4 as uuid } from 'uuid';
 import { CreateUserDto } from '../dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CreateUserUseCase {
@@ -17,7 +18,9 @@ export class CreateUserUseCase {
     if (existingUser) {
       throw new BadRequestException('Ya existe un usuario con ese email');
     }
-    const user = User.create(uuid(), dto.name, dto.email, dto.password, dto.roleId);
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const user = User.create(uuid(), dto.name, dto.email, hashedPassword, dto.roleId);
     return this.userRepo.save(user);
   }
 }
