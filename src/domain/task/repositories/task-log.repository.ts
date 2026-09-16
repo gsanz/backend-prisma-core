@@ -6,8 +6,16 @@ export interface TaskLogRepository {
   save(taskLog: TaskLog): Promise<TaskLog>;
   findById(id: string): Promise<TaskLog | null>;
   findByUserIdsAndDate(userIds: string[], fecha: Date): Promise<TaskLog[]>;
-  findByUserIdAndDateRange(userId: string, fechaInicio: Date, fechaFin: Date): Promise<TaskLog[]>;
-  findForExport(fechaInicio: Date, fechaFin: Date, userIds?: string[]): Promise<TaskLogExportRow[]>;
+  findByUserIdAndDateRange(
+    userId: string,
+    fechaInicio: Date,
+    fechaFin: Date,
+  ): Promise<TaskLog[]>;
+  findForExport(
+    fechaInicio: Date,
+    fechaFin: Date,
+    userIds?: string[],
+  ): Promise<TaskLogExportRow[]>;
   update(id: string, data: UpdateTaskLogData): Promise<TaskLog>;
   delete(id: string): Promise<void>;
 }

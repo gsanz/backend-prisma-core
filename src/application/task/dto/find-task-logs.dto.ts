@@ -8,7 +8,8 @@ export class FindTaskLogsByDateDto {
   fecha?: string;
 
   @ApiPropertyOptional({
-    description: 'IDs de usuario separados por comas. Si se omite, usa el usuario autenticado.',
+    description:
+      'IDs de usuario separados por comas. Si se omite, usa el usuario autenticado.',
     example: 'uuid-1,uuid-2,uuid-3',
   })
   @IsOptional()

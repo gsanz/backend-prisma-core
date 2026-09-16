@@ -58,9 +58,20 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
     );
   }
 
-  async findByUserIdsAndDate(userIds: string[], fecha: Date): Promise<TaskLog[]> {
-    const startOfDay = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-    const nextDay = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1);
+  async findByUserIdsAndDate(
+    userIds: string[],
+    fecha: Date,
+  ): Promise<TaskLog[]> {
+    const startOfDay = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate(),
+    );
+    const nextDay = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate() + 1,
+    );
 
     const logs = await this.prisma.taskLog.findMany({
       where: {
@@ -72,23 +83,36 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
     });
 
     return logs.map(
-      (l) => new TaskLog(
-        l.id,
-        l.userId,
-        l.tareaId,
-        l.tarea?.nombre ?? '',
-        l.fecha,
-        l.descripcion,
-        l.horas != null ? Number(l.horas) : null,
-        l.createdAt,
-        l.updatedAt,
-      ),
+      (l) =>
+        new TaskLog(
+          l.id,
+          l.userId,
+          l.tareaId,
+          l.tarea?.nombre ?? '',
+          l.fecha,
+          l.descripcion,
+          l.horas != null ? Number(l.horas) : null,
+          l.createdAt,
+          l.updatedAt,
+        ),
     );
   }
 
-  async findByUserIdAndDateRange(userId: string, fechaInicio: Date, fechaFin: Date): Promise<TaskLog[]> {
-    const startOfDay = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), fechaInicio.getDate());
-    const endOfDay = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), fechaFin.getDate() + 1);
+  async findByUserIdAndDateRange(
+    userId: string,
+    fechaInicio: Date,
+    fechaFin: Date,
+  ): Promise<TaskLog[]> {
+    const startOfDay = new Date(
+      fechaInicio.getFullYear(),
+      fechaInicio.getMonth(),
+      fechaInicio.getDate(),
+    );
+    const endOfDay = new Date(
+      fechaFin.getFullYear(),
+      fechaFin.getMonth(),
+      fechaFin.getDate() + 1,
+    );
 
     const logs = await this.prisma.taskLog.findMany({
       where: {
@@ -100,17 +124,18 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
     });
 
     return logs.map(
-      (l) => new TaskLog(
-        l.id,
-        l.userId,
-        l.tareaId,
-        l.tarea?.nombre ?? '',
-        l.fecha,
-        l.descripcion,
-        l.horas != null ? Number(l.horas) : null,
-        l.createdAt,
-        l.updatedAt,
-      ),
+      (l) =>
+        new TaskLog(
+          l.id,
+          l.userId,
+          l.tareaId,
+          l.tarea?.nombre ?? '',
+          l.fecha,
+          l.descripcion,
+          l.horas != null ? Number(l.horas) : null,
+          l.createdAt,
+          l.updatedAt,
+        ),
     );
   }
 
@@ -119,8 +144,16 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
     fechaFin: Date,
     userIds?: string[],
   ): Promise<TaskLogExportRow[]> {
-    const startOfDay = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), fechaInicio.getDate());
-    const endOfDay = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), fechaFin.getDate() + 1);
+    const startOfDay = new Date(
+      fechaInicio.getFullYear(),
+      fechaInicio.getMonth(),
+      fechaInicio.getDate(),
+    );
+    const endOfDay = new Date(
+      fechaFin.getFullYear(),
+      fechaFin.getMonth(),
+      fechaFin.getDate() + 1,
+    );
 
     const logs = await this.prisma.taskLog.findMany({
       where: {
@@ -151,7 +184,9 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
     const updated = await this.prisma.taskLog.update({
       where: { id },
       data: {
-        ...(data.descripcion !== undefined && { descripcion: data.descripcion }),
+        ...(data.descripcion !== undefined && {
+          descripcion: data.descripcion,
+        }),
         ...(data.horas !== undefined && { horas: data.horas }),
       },
     });
