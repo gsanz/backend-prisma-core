@@ -43,6 +43,7 @@ import { JwtAuthGuard } from 'src/infraestructure/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/infraestructure/auth/roles.guard';
 import { Roles } from 'src/infraestructure/auth/roles.decorator';
 import { RoleName } from 'src/domain/role/enums/role.enum';
+import { parseDateOnly } from '../../../common/utils/date-only';
 
 interface AuthRequest extends Request {
   user: { id: string };
@@ -89,7 +90,7 @@ export class TaskLogController {
     @Query() dto: FindTaskLogsByDateDto,
     @Req() request: AuthRequest,
   ): Promise<TaskLog[]> {
-    const fecha = dto.fecha ? new Date(dto.fecha) : new Date();
+    const fecha = dto.fecha ? parseDateOnly(dto.fecha) : new Date();
     return this.findTaskLogsByUserAndDateUseCase.execute(
       request.user.id,
       fecha,
@@ -125,9 +126,9 @@ export class TaskLogController {
     @Req() request: AuthRequest,
   ): Promise<TaskLog[]> {
     const fechaInicio = dto.fechaInicio
-      ? new Date(dto.fechaInicio)
+      ? parseDateOnly(dto.fechaInicio)
       : new Date();
-    const fechaFin = dto.fechaFin ? new Date(dto.fechaFin) : new Date();
+    const fechaFin = dto.fechaFin ? parseDateOnly(dto.fechaFin) : new Date();
     return this.findTaskLogsByUserAndDateRangeUseCase.execute(
       request.user.id,
       fechaInicio,

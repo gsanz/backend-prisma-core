@@ -7,6 +7,7 @@ import { TaskLog } from '../../../domain/task/entities/task-log.entity';
 import { Task } from '../../../domain/task/entities/task.entity';
 import { v4 as uuid } from 'uuid';
 import { CreateTaskLogDto } from '../dto/create-task-log.dto';
+import { parseDateOnly } from '../../../common/utils/date-only';
 
 @Injectable()
 export class CreateTaskLogUseCase {
@@ -26,12 +27,17 @@ export class CreateTaskLogUseCase {
       throw new BadRequestException('La tarea no le pertenece a este usuario');
     }
 
+    const fecha = parseDateOnly(dto.fecha);
+    if (Number.isNaN(fecha.getTime())) {
+      throw new BadRequestException('La fecha debe tener el formato YYYY-MM-DD');
+    }
+
     const taskLog = TaskLog.create(
       uuid(),
       userId,
       dto.tareaId,
       task.getNombre(),
-      new Date(dto.fecha),
+      fecha,
       dto.descripcion ?? null,
       dto.horas ?? null,
     );

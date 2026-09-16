@@ -66,11 +66,13 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
       fecha.getFullYear(),
       fecha.getMonth(),
       fecha.getDate(),
+      12,
     );
     const nextDay = new Date(
       fecha.getFullYear(),
       fecha.getMonth(),
       fecha.getDate() + 1,
+      12,
     );
 
     const logs = await this.prisma.taskLog.findMany({
@@ -107,11 +109,13 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
       fechaInicio.getFullYear(),
       fechaInicio.getMonth(),
       fechaInicio.getDate(),
+      12,
     );
     const endOfDay = new Date(
       fechaFin.getFullYear(),
       fechaFin.getMonth(),
       fechaFin.getDate() + 1,
+      12,
     );
 
     const logs = await this.prisma.taskLog.findMany({
@@ -148,11 +152,13 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
       fechaInicio.getFullYear(),
       fechaInicio.getMonth(),
       fechaInicio.getDate(),
+      12,
     );
     const endOfDay = new Date(
       fechaFin.getFullYear(),
       fechaFin.getMonth(),
       fechaFin.getDate() + 1,
+      12,
     );
 
     const logs = await this.prisma.taskLog.findMany({
