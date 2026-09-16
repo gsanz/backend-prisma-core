@@ -29,7 +29,9 @@ export class CreateTaskLogUseCase {
 
     const fecha = parseDateOnly(dto.fecha);
     if (Number.isNaN(fecha.getTime())) {
-      throw new BadRequestException('La fecha debe tener el formato YYYY-MM-DD');
+      throw new BadRequestException(
+        'La fecha debe tener el formato YYYY-MM-DD',
+      );
     }
 
     const taskLog = TaskLog.create(
