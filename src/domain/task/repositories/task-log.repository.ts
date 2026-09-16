@@ -5,7 +5,7 @@ export const TASK_LOG_REPOSITORY = 'TaskLogRepository';
 export interface TaskLogRepository {
   save(taskLog: TaskLog): Promise<TaskLog>;
   findById(id: string): Promise<TaskLog | null>;
-  findByUserIdAndDate(userId: string, fecha: Date): Promise<TaskLog[]>;
+  findByUserIdsAndDate(userIds: string[], fecha: Date): Promise<TaskLog[]>;
   findByUserIdAndDateRange(userId: string, fechaInicio: Date, fechaFin: Date): Promise<TaskLog[]>;
   findForExport(fechaInicio: Date, fechaFin: Date, userIds?: string[]): Promise<TaskLogExportRow[]>;
   update(id: string, data: UpdateTaskLogData): Promise<TaskLog>;

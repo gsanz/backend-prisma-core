@@ -47,10 +47,11 @@ export class TaskLogController {
   @Roles(RoleName.ADMINISTRADOR, RoleName.MANAGER, RoleName.TECNICO)
   @ApiOperation({ summary: 'Obtener registros de un usuario para un día concreto' })
   @ApiQuery({ name: 'fecha', required: false, type: String, description: 'Fecha en formato YYYY-MM-DD' })
+  @ApiQuery({ name: 'userId', required: false, type: String, description: 'IDs de usuario separados por comas; si se omite, usa el usuario autenticado' })
   @ApiResponse({ status: 200, description: 'Registros del día', type: [TaskLog] })
   async findByDay(@Query() dto: FindTaskLogsByDateDto, @Req() request: AuthRequest): Promise<TaskLog[]> {
     const fecha = dto.fecha ? new Date(dto.fecha) : new Date();
-    return this.findTaskLogsByUserAndDateUseCase.execute(request.user.id, fecha);
+    return this.findTaskLogsByUserAndDateUseCase.execute(request.user.id, fecha, dto.userId);
   }
 
   @Get('range')

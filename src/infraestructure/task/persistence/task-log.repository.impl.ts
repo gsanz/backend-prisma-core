@@ -58,13 +58,13 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
     );
   }
 
-  async findByUserIdAndDate(userId: string, fecha: Date): Promise<TaskLog[]> {
+  async findByUserIdsAndDate(userIds: string[], fecha: Date): Promise<TaskLog[]> {
     const startOfDay = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
     const nextDay = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1);
 
     const logs = await this.prisma.taskLog.findMany({
       where: {
-        userId,
+        userId: { in: userIds },
         fecha: { gte: startOfDay, lt: nextDay },
       },
       orderBy: { fecha: 'asc' },
