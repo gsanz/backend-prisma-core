@@ -20,38 +20,43 @@ export class ExportTaskLogsToExcelUseCase {
     const worksheet = workbook.addWorksheet('TaskLog');
 
     worksheet.columns = [
-      { header: 'Fecha', key: 'fecha', width: 14 },
-      { header: 'Usuario', key: 'usuario', width: 24 },
-      { header: 'Apellido', key: 'apellido', width: 24 },
-      { header: 'Email', key: 'email', width: 32 },
-      { header: 'Tarea', key: 'tarea', width: 36 },
-      { header: 'Descripción', key: 'descripcion', width: 60 },
-      { header: 'Horas', key: 'horas', width: 12 },
+      { key: 'fecha', width: 14 },
+      { key: 'tecnico', width: 30 },
+      { key: 'actividades', width: 45 },
+      { key: 'observaciones', width: 60 },
     ];
 
-    worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    worksheet.getRow(1).fill = {
+    worksheet.mergeCells('A1:D1');
+    worksheet.getCell('A1').value =
+      'APOYO TÉCNICO A LAS NECESIDADES DE LA AVSRE DERIVADAS DE LAS CONSECUENCIAS DE LA DANA 2024';
+    worksheet.getCell('A1').font = { bold: true, size: 14 };
+    worksheet.getCell('A1').alignment = { horizontal: 'center' };
+    worksheet.getRow(2).values = [
+      'Fecha',
+      'Nombre del Técnico',
+      'Actividades',
+      'Observaciones',
+    ];
+    worksheet.getRow(2).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getRow(2).fill = {
       type: 'pattern',
       pattern: 'solid',
       fgColor: { argb: 'FF1F4E78' },
     };
-    worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+    worksheet.views = [{ state: 'frozen', ySplit: 2 }];
 
     for (const row of rows) {
       worksheet.addRow({
         fecha: row.fecha.toISOString().slice(0, 10),
-        usuario: row.user.name,
-        apellido: row.user.secondname ?? '',
-        email: row.user.email,
-        tarea: row.tareaNombre,
-        descripcion: row.descripcion ?? '',
-        horas: row.horas,
+        tecnico: `${row.user.name} ${row.user.secondname ?? ''}`.trim(),
+        actividades: row.tareaNombre,
+        observaciones: row.descripcion ?? '',
       });
     }
 
     worksheet.autoFilter = {
-      from: 'A1',
-      to: 'F1',
+      from: 'A2',
+      to: 'D2',
     };
 
     const buffer = await workbook.xlsx.writeBuffer();

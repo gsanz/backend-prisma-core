@@ -34,25 +34,22 @@ describe('ExportTaskLogsToExcelUseCase', () => {
     await workbook.xlsx.load(buffer);
     const worksheet = workbook.getWorksheet('TaskLog');
 
-    expect(worksheet?.getRow(1).values).toEqual([
-      undefined,
-      'Fecha',
-      'Usuario',
-      'Apellido',
-      'Email',
-      'Tarea',
-      'Descripción',
-      'Horas',
-    ]);
+    expect(worksheet?.getCell('A1').value).toBe(
+      'APOYO TÉCNICO A LAS NECESIDADES DE LA AVSRE DERIVADAS DE LAS CONSECUENCIAS DE LA DANA 2024',
+    );
     expect(worksheet?.getRow(2).values).toEqual([
       undefined,
+      'Fecha',
+      'Nombre del Técnico',
+      'Actividades',
+      'Observaciones',
+    ]);
+    expect(worksheet?.getRow(3).values).toEqual([
+      undefined,
       '2026-09-15',
-      'Pedro',
-      'López',
-      'plopez@tragsa.com',
+      'Pedro López',
       'Revisión de cámaras',
       'Comprobación diaria',
-      2.5,
     ]);
   });
 
