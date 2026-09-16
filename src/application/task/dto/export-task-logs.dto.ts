@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsOptional, IsUUID } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class ExportTaskLogsDto {
   @ApiProperty({ example: '2026-09-01', description: 'Fecha inicial incluida' })
@@ -10,8 +10,11 @@ export class ExportTaskLogsDto {
   @IsDateString()
   fechaFin: string;
 
-  @ApiPropertyOptional({ description: 'ID del usuario. Si se omite, incluye todos los usuarios.' })
+  @ApiPropertyOptional({
+    description: 'IDs de usuario separados por comas. Si se omite, incluye todos los usuarios.',
+    example: 'uuid-1,uuid-2,uuid-3',
+  })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   userId?: string;
 }

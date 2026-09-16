@@ -4,6 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { Task } from '../../../domain/task/entities/task.entity';
 import { UpdateTaskData } from 'src/domain/task/types/update-task-data.type';
 import { PaginatedResult } from '../../../common/types/paginated-result.type';
+import { RoleName } from '../../../domain/role/enums/role.enum';
 
 @Injectable()
 export class TaskRepositoryImpl implements TaskRepository {
@@ -38,20 +39,21 @@ export class TaskRepositoryImpl implements TaskRepository {
     fecha?: Date,
   ): Promise<PaginatedResult<Task>> {
     const skip = (page - 1) * limit;
-    const selectedDay = fecha
-      ? new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() + 1)
+    const startOfDay = fecha
+      ? new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate())
       : undefined;
-    const followingDay = selectedDay
-      ? new Date(
-          selectedDay.getFullYear(),
-          selectedDay.getMonth(),
-          selectedDay.getDate() + 1,
-        )
+    const endOfDay = startOfDay
+      ? new Date(startOfDay.getFullYear(), startOfDay.getMonth(), startOfDay.getDate() + 1)
       : undefined;
     const where = {
-      ...(userId && { userId }),
-      ...(selectedDay && followingDay && {
-        fechaInicio: { gte: selectedDay, lt: followingDay },
+      ...(startOfDay && endOfDay && {
+        fechaInicio: { gte: startOfDay, lt: endOfDay },
+      }),
+      ...(userId && {
+        OR: [
+          { userId },
+          { user: { role: { nombre: RoleName.ADMINISTRADOR } } },
+        ],
       }),
     };
 

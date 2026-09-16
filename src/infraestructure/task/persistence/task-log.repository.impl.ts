@@ -117,14 +117,14 @@ export class TaskLogRepositoryImpl implements TaskLogRepository {
   async findForExport(
     fechaInicio: Date,
     fechaFin: Date,
-    userId?: string,
+    userIds?: string[],
   ): Promise<TaskLogExportRow[]> {
     const startOfDay = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), fechaInicio.getDate());
     const endOfDay = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), fechaFin.getDate() + 1);
 
     const logs = await this.prisma.taskLog.findMany({
       where: {
-        ...(userId && { userId }),
+        ...(userIds?.length && { userId: { in: userIds } }),
         fecha: { gte: startOfDay, lt: endOfDay },
       },
       orderBy: [{ fecha: 'asc' }, { createdAt: 'asc' }],

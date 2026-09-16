@@ -76,7 +76,7 @@ export class TaskLogController {
   @ApiProduces('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   @ApiQuery({ name: 'fechaInicio', required: true, type: String, description: 'Fecha inicial en formato YYYY-MM-DD' })
   @ApiQuery({ name: 'fechaFin', required: true, type: String, description: 'Fecha final en formato YYYY-MM-DD' })
-  @ApiQuery({ name: 'userId', required: false, type: String, description: 'ID del usuario; si se omite, incluye todos' })
+  @ApiQuery({ name: 'userId', required: false, type: String, description: 'IDs de usuario separados por comas; si se omite, incluye todos' })
   @ApiResponse({ status: 200, description: 'Fichero Excel generado' })
   async export(
     @Query() dto: ExportTaskLogsDto,

@@ -1,4 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import ExcelJS from 'exceljs';
 import { TASK_LOG_REPOSITORY } from '../../../domain/task/repositories/task-log.repository';
 import type { TaskLogRepository } from '../../../domain/task/repositories/task-log.repository';
@@ -10,12 +11,27 @@ export class ExportTaskLogsToExcelUseCase {
     private readonly taskLogRepo: TaskLogRepository,
   ) {}
 
-  async execute(fechaInicio: Date, fechaFin: Date, userId?: string): Promise<Buffer> {
+  async execute(
+    fechaInicio: Date,
+    fechaFin: Date,
+    userId?: string,
+  ): Promise<Buffer> {
     if (fechaInicio > fechaFin) {
-      throw new BadRequestException('La fechaInicio no puede ser posterior a la fechaFin');
+      throw new BadRequestException(
+        'La fechaInicio no puede ser posterior a la fechaFin',
+      );
     }
 
-    const rows = await this.taskLogRepo.findForExport(fechaInicio, fechaFin, userId);
+    const userIds = userId
+      ?.split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+
+    if (userIds?.some((id) => !isUUID(id))) {
+      throw new BadRequestException('Los IDs de usuario deben ser UUID válidos');
+    }
+
+    const rows = await this.taskLogRepo.findForExport(fechaInicio, fechaFin, userIds);
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('TaskLog');
 
